@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pokedex</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div class="container mx-auto p-8">
+    <h1 class="text-3xl font-bold mb-8">Pokedex</h1>
+    <div class="flex items-center mb-8">
+      <input id="pokemon-input" type="text" placeholder="Inserisci il nome del Pokemon" class="p-2 border border-gray-300 rounded-l focus:outline-none focus:border-blue-500">
+      <button id="search-btn" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-r">Cerca</button>
+    </div>
+    <div id="pokemon-info" class="text-left"></div>
+  </div>
+
+  <script>
+    const searchBtn = document.getElementById('search-btn');
+    const pokemonInput = document.getElementById('pokemon-input');
+    const pokemonInfo = document.getElementById('pokemon-info');
+
+    searchBtn.addEventListener('click', function() {
+      const pokemonName = pokemonInput.value.toLowerCase().trim();
+
+      // Effettua la chiamata all'API per ottenere le informazioni del Pokemon
+      fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
+        .then(response => {
+          if (response.status === 404) {
+            throw new Error('Il Pokemon non esiste');
+          } else {
+            return response.json();
+          }
+        })
+        .then(data => {
+          const pokemon = {
+            name: data.name,
+            height: data.height,
+            weight: data.weight,
+            abilities: data.abilities.map(ability => ability.ability.name),
+            types: data.types.map(type => type.type.name),
+            image: data.sprites.front_default
+          };
+
+          // Mostra le informazioni del Pokemon
+          showPokemonInfo(pokemon);
+        })
+        .catch(error => {
+          // Gestisci l'errore se il Pokemon non esiste
+          showErrorMessage(error.message);
+        });
+    });
+
+    function showPokemonInfo(pokemon) {
+      pokemonInfo.innerHTML = `
+        <h2 class="text-2xl font-bold">${pokemon.name.toUpperCase()}</h2>
+        <img src="${pokemon.image}" alt="${pokemon.name}" class="w-48 h-48 mb-4">
+        <p><strong>Altezza:</strong> ${pokemon.height}</p>
+        <p><strong>Peso:</strong> ${pokemon.weight}</p>
+        <p><strong>Abilità:</strong> ${pokemon.abilities.join(', ')}</p>
+        <p><strong>Tipo:</strong> ${pokemon.types.join(', ')}</p>
+      `;
+    }
+
+    function showErrorMessage(message) {
+      pokemonInfo.innerHTML = `
+        <p class="text-red-500 mt-4">${message}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
