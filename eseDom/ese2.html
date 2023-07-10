@@ -22,7 +22,7 @@
     searchBtn.addEventListener('click', function() {
       const pokemonName = pokemonInput.value.toLowerCase().trim();
 
-      // Effettua la chiamata all'API per ottenere le informazioni del Pokemon
+    
       fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
         .then(response => {
           if (response.status === 404) {
@@ -41,11 +41,11 @@
             image: data.sprites.front_default
           };
 
-          // Mostra le informazioni del Pokemon
+          
           showPokemonInfo(pokemon);
         })
         .catch(error => {
-          // Gestisci l'errore se il Pokemon non esiste
+         
           showErrorMessage(error.message);
         });
     });
